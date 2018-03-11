@@ -135,7 +135,15 @@ class Bibliotheque
 			int compte = 0;
 			for(unsigned int i = 0; i < ensemble.size(); ++i)
 			{
-				if(ensemble[i]->getOeuvre().getTitre() == creation.getTitre()) ++compte;
+				string eTitre	= ensemble[i]->getOeuvre().getTitre();
+				string eAuteur	= ensemble[i]->getOeuvre().getAuteur().getNom();
+				string eLangue	= ensemble[i]->getOeuvre().getLangue();
+				
+				string oTitre	= creation.getTitre();
+				string oAuteur	= creation.getAuteur().getNom();
+				string oLangue	= creation.getLangue();
+				
+				if(eTitre == oTitre && eAuteur == oAuteur && eLangue == oLangue) ++compte;
 			}
 			return compte;
 		}
