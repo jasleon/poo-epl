@@ -50,7 +50,7 @@ class Oeuvre
 		Oeuvre(Oeuvre const&) = delete;
 		~Oeuvre()
 		{
-			cout << "L'oeuvre \"" << titre << ", " << ecrivain.getNom() << ", en " << langue << "\" n'est plus disponible" << endl;
+			cout << "L'oeuvre \"" << titre << ", " << ecrivain.getNom() << ", en " << langue << "\" n'est plus disponible." << endl;
 		}
 		string getTitre() const { return titre; }
 		Auteur const& getAuteur() const { return ecrivain; }

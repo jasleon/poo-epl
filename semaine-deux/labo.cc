@@ -22,7 +22,7 @@ class Souris
 		: poids(_other.poids), couleur(_other.couleur), age(_other.age), esperance_vie(4 * (_other.esperance_vie / 5)), clonee(true)
 	{cout << "Clonage d'une souris !" << endl;}
 	~Souris()
-	{cout << "Fin d'une souris" << endl;}
+	{cout << "Fin d’une souris..." << endl;}
 	void afficher()
 	{
 		cout << "Une souris " << couleur;
@@ -33,11 +33,11 @@ class Souris
 	void vieillir()
 	{
 		++age;
-		if(clonee && age > 18) couleur = "verte"; 
+		if(clonee && age > (esperance_vie / 2)) couleur = "verte"; 
 	}
 	void evolue()
 	{
-		if(age < esperance_vie) ++age;
+		for(unsigned int i = age; i < esperance_vie; ++i) vieillir();
 	}
   /*******************************************
    * Ne rien modifier après cette ligne.
