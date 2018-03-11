@@ -69,20 +69,16 @@ class Exemplaire
 		Exemplaire(Oeuvre const& creation)
 		: creation(creation)
 		{
-			cout << "Nouvel exemplaire de : ";
-			creation.affiche();
+			cout << "Nouvel exemplaire de : " << creation.getTitre() << ", " << creation.getAuteur().getNom() << ", en " << creation.getLangue() << endl;
 		}
 		Exemplaire(Exemplaire const& _other)
 		: creation(_other.creation)
 		{
-			cout << "Copie d'un exemplaire de : ";
-			_other.affiche();
+			cout << "Copie d'un exemplaire de : " << _other.creation.getTitre() << ", " << _other.creation.getAuteur().getNom() << ", en " << _other.creation.getLangue() << endl;
 		}
 		~Exemplaire()
 		{
-			cout << "Un exemplaire de \"";
-			creation.affiche();
-			cout << "\" a été jeté !" << endl;
+			cout << "Un exemplaire de \"" << creation.getTitre() << ", " << creation.getAuteur().getNom() << ", en " << creation.getLangue() << "\" a été jeté !" << endl;
 		}
 		Oeuvre const& getOeuvre() const { return creation; }
 		void affiche() const
@@ -91,23 +87,73 @@ class Exemplaire
 		}
 };
 
-//class Bibliotheque
-//{
-	//private:
-		//string nom;
-		//vector<Exemplaire *> ensemble;
-	//public:
-		//Bibliotheque() { cout << "La bibliothèque " << nom << "est ouverte !" << endl; }
-		//string getNom() const { return nom; }
-		//void stocker(Oeuvre const& creation, int n = 1)
-		//{
-			//while( n != 0 )
-			//{
-				//ensemble.push_back(creation);
-				//--n;
-			//}
-		//}
-//};
+class Bibliotheque
+{
+	private:
+		string nom;
+		vector<Exemplaire *> ensemble;
+	public:
+		Bibliotheque(string nom)
+		: nom(nom)
+		{ cout << "La bibliothèque " << nom << " est ouverte !" << endl; }
+		~Bibliotheque()
+		{
+			cout << "La bibliothèque " << nom << " ferme ses portes," << endl;
+			cout << "et détruit ses exemplaires :" << endl;
+			for(unsigned int i = 0; i < ensemble.size(); ++i) delete ensemble[i];
+		}
+		string getNom() const { return nom; }
+		void stocker(Oeuvre const& creation, int n = 1)
+		{
+			for(int i = 1; i < (n + 1); ++i)
+			{
+				Exemplaire * ptr = new Exemplaire(creation);
+				ensemble.push_back(ptr);
+			}
+		}
+		void lister_exemplaires(string langue = "aucune")
+		{
+			for(unsigned int i = 0; i < ensemble.size(); ++i)
+			{
+				if(langue == "aucune")
+				{
+					ensemble[i]->affiche();
+					cout << endl;
+				}
+				else
+				{
+					if(ensemble[i]->getOeuvre().getLangue() == langue)
+					{
+						ensemble[i]->affiche();
+						cout << endl;
+					}
+				}
+			}
+		}
+		int compter_exemplaires(Oeuvre const& creation)
+		{
+			int compte = 0;
+			for(unsigned int i = 0; i < ensemble.size(); ++i)
+			{
+				if(ensemble[i]->getOeuvre().getTitre() == creation.getTitre()) ++compte;
+			}
+			return compte;
+		}
+		void afficher_auteurs(bool primes = false)
+		{
+			for(unsigned int i = 0; i < ensemble.size(); ++i)
+			{
+				if(primes)
+				{
+					if(ensemble[i]->getOeuvre().getAuteur().getPrix()) cout << ensemble[i]->getOeuvre().getAuteur().getNom() << endl;
+				} 
+				else
+				{
+					cout << ensemble[i]->getOeuvre().getAuteur().getNom() << endl;
+				}
+			}
+		}
+};
 /*******************************************
  * Ne rien modifier apres cette ligne.
  *******************************************/
@@ -124,26 +170,26 @@ int main()
          o4("Zazie dans le métro"      , a3, "français" ),
          o5("The Count of Monte-Cristo", a2, "anglais" );
 
-  //Bibliotheque biblio("municipale");
-  //biblio.stocker(o1, 2);
-  //biblio.stocker(o2);
-  //biblio.stocker(o3, 3);
-  //biblio.stocker(o4);
-  //biblio.stocker(o5);
+  Bibliotheque biblio("municipale");
+  biblio.stocker(o1, 2);
+  biblio.stocker(o2);
+  biblio.stocker(o3, 3);
+  biblio.stocker(o4);
+  biblio.stocker(o5);
 
-  //cout << "La bibliothèque " << biblio.getNom()
-       //<< " offre les exemplaires suivants :" << endl;
-  //biblio.lister_exemplaires();
+  cout << "La bibliothèque " << biblio.getNom()
+       << " offre les exemplaires suivants :" << endl;
+  biblio.lister_exemplaires();
 
-  //const string langue("anglais");
-  //cout << " Les exemplaires en "<< langue << " sont :" << endl;
-  //biblio.lister_exemplaires(langue);
+  const string langue("anglais");
+  cout << " Les exemplaires en "<< langue << " sont :" << endl;
+  biblio.lister_exemplaires(langue);
 
-  //cout << " Les auteurs à succès sont :" << endl;
-  //biblio.afficher_auteurs(true);
+  cout << " Les auteurs à succès sont :" << endl;
+  biblio.afficher_auteurs(true);
 
-  //cout << " Il y a " << biblio.compter_exemplaires(o3) << " exemplaires de "
-       //<< o3.getTitre() << endl;
+  cout << " Il y a " << biblio.compter_exemplaires(o3) << " exemplaires de "
+       << o3.getTitre() << endl;
 
-  //return 0;
+  return 0;
 }
