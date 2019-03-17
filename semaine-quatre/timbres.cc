@@ -10,7 +10,6 @@ private:
   /*****************************************************
    * Compléter le code à partir d'ici
    *****************************************************/
-protected: 
   string nom;
 	unsigned int annee;
 	string pays;
@@ -26,7 +25,7 @@ public:
   /**
    * Determine the selling price of a stamp
    */ 
-  double vente() 
+  double vente() const
   {
     return ((age() < 5U) ? valeur_faciale : (valeur_faciale * static_cast<double>(age()) * 2.5));
   }
@@ -34,11 +33,14 @@ public:
   /**
    * Determine the current age of a stamp
    */ 
-  unsigned int age() { return (ANNEE_COURANTE - annee); }
+  unsigned int age() const { return (ANNEE_COURANTE - annee); }
 
+  /**
+   * Display basic information of a stamp
+   */ 
   ostream& afficher(ostream& sortie) const
   {
-    sortie << "Timbre de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";
+    sortie << "de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";
     return sortie;
   }
 };
@@ -61,7 +63,7 @@ class Rare : public Timbre
     /**
      * Determine the selling price of a rare stamp
      */ 
-    double vente() 
+    double vente() const
     {
       unsigned int prix_base(0U);
       if(exemplaires < 100U)
@@ -82,13 +84,7 @@ class Rare : public Timbre
     /**
      * Access the number of stamp copies
      */
-    unsigned int nb_exemplaires() { return exemplaires; }
-
-    ostream& afficher(ostream& sortie) const
-    {
-      sortie << "Timbre rare (" << exemplaires << " ex.) de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";  
-      return sortie;
-    } 
+    unsigned int nb_exemplaires() const { return exemplaires; }
 };
 
 class Commemoratif : public Timbre
@@ -103,30 +99,27 @@ class Commemoratif : public Timbre
     /**
      * Determine the selling price of a commemorative stamp
      */ 
-    double vente() 
+    double vente() const
     {
       return (2.0 * Timbre::vente());
     }
-
-    ostream& afficher(ostream& sortie) const
-    {
-      sortie << "Timbre commémoratif de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";  
-      return sortie;
-    } 
 };
 
 ostream& operator<<(ostream& sortie, Timbre const& stamp)
 {
+	sortie << "Timbre ";
 	return stamp.afficher(sortie);
 }
 
 ostream& operator<<(ostream& sortie, Rare const& stamp)
 {
+	sortie << "Timbre rare (" << stamp.nb_exemplaires() << " ex.) ";
 	return stamp.afficher(sortie);
 }
 
 ostream& operator<<(ostream& sortie, Commemoratif const& stamp)
 {
+	sortie << "Timbre commémoratif ";
 	return stamp.afficher(sortie);
 }
 
