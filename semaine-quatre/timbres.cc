@@ -10,11 +10,8 @@ private:
   /*****************************************************
    * Compléter le code à partir d'ici
    *****************************************************/
-  static constexpr unsigned int PRIX_BASE_TRES_RARE = 600;
-  static constexpr unsigned int PRIX_BASE_RARE = 400;
-  static constexpr unsigned int PRIX_BASE_PEU_RARE = 50;
-
-	string nom;
+protected: 
+  string nom;
 	unsigned int annee;
 	string pays;
 	double valeur_faciale;
@@ -24,10 +21,114 @@ public:
    * Superclass constructor
    */ 
   Timbre(string code, unsigned int issue_year, string country = "Suisse", double denomination_value = 1.0)
-    : nom(code), annee(issue_year), pays(country), valeur_faciale(denomination_value) {};
-  double vente() { return 0.0; };
-  unsigned int age() { return 0U; };
+    : nom(code), annee(issue_year), pays(country), valeur_faciale(denomination_value) {}
+  
+  /**
+   * Determine the selling price of a stamp
+   */ 
+  double vente() 
+  {
+    return ((age() < 5U) ? valeur_faciale : (valeur_faciale * static_cast<double>(age()) * 2.5));
+  }
+  
+  /**
+   * Determine the current age of a stamp
+   */ 
+  unsigned int age() { return (ANNEE_COURANTE - annee); }
+
+  ostream& afficher(ostream& sortie) const
+  {
+    sortie << "Timbre de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";
+    return sortie;
+  }
 };
+
+class Rare : public Timbre
+{
+  private:
+    static constexpr unsigned int PRIX_BASE_TRES_RARE = 600U;
+    static constexpr unsigned int PRIX_BASE_RARE = 400U;
+    static constexpr unsigned int PRIX_BASE_PEU_RARE = 50U;
+    unsigned int exemplaires;
+
+  public:
+    /**
+     * Subclass constructor
+     */
+    Rare(string code, unsigned int issue_year, string country, double denomination_value, unsigned int copies = 100U)
+      : Timbre(code, issue_year, country, denomination_value), exemplaires(copies) {} 
+    
+    /**
+     * Determine the selling price of a rare stamp
+     */ 
+    double vente() 
+    {
+      unsigned int prix_base(0U);
+      if(exemplaires < 100U)
+      {
+        prix_base = PRIX_BASE_TRES_RARE;
+      }
+      else if((100U <= exemplaires) && (exemplaires <= 1000U))
+      {
+        prix_base = PRIX_BASE_RARE;
+      }
+      else
+      {
+        prix_base = PRIX_BASE_PEU_RARE;
+      }
+      return (static_cast<double>(prix_base) * (static_cast<double>(age()) / 10.0));
+    }
+    
+    /**
+     * Access the number of stamp copies
+     */
+    unsigned int nb_exemplaires() { return exemplaires; }
+
+    ostream& afficher(ostream& sortie) const
+    {
+      sortie << "Timbre rare (" << exemplaires << " ex.) de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";  
+      return sortie;
+    } 
+};
+
+class Commemoratif : public Timbre
+{
+  public:
+    /**
+     * Subclass constructor
+     */
+    Commemoratif(string code, unsigned int issue_year, string country, double denomination_value)
+      : Timbre(code, issue_year, country, denomination_value) {}
+
+    /**
+     * Determine the selling price of a commemorative stamp
+     */ 
+    double vente() 
+    {
+      return (2.0 * Timbre::vente());
+    }
+
+    ostream& afficher(ostream& sortie) const
+    {
+      sortie << "Timbre commémoratif de nom " << nom << " datant de " << annee << " (provenance " << pays << ") ayant pour valeur faciale " << valeur_faciale << " francs";  
+      return sortie;
+    } 
+};
+
+ostream& operator<<(ostream& sortie, Timbre const& stamp)
+{
+	return stamp.afficher(sortie);
+}
+
+ostream& operator<<(ostream& sortie, Rare const& stamp)
+{
+	return stamp.afficher(sortie);
+}
+
+ostream& operator<<(ostream& sortie, Commemoratif const& stamp)
+{
+	return stamp.afficher(sortie);
+}
 
 /*******************************************
  * Ne rien modifier après cette ligne.
