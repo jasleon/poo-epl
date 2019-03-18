@@ -57,7 +57,7 @@ class Rare : public Timbre
     /**
      * Subclass constructor
      */
-    Rare(string code, unsigned int issue_year, string country, double denomination_value, unsigned int copies = 100U)
+    Rare(string code, unsigned int issue_year, string country = "Suisse", double denomination_value = 1.0, unsigned int copies = 100U)
       : Timbre(code, issue_year, country, denomination_value), exemplaires(copies) {} 
     
     /**
@@ -93,7 +93,7 @@ class Commemoratif : public Timbre
     /**
      * Subclass constructor
      */
-    Commemoratif(string code, unsigned int issue_year, string country, double denomination_value)
+    Commemoratif(string code, unsigned int issue_year, string country = "Suisse", double denomination_value = 1.0)
       : Timbre(code, issue_year, country, denomination_value) {}
 
     /**

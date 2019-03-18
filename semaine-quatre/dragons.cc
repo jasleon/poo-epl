@@ -48,8 +48,11 @@ class Creature
          * A method to add an integer to the position of the creature
          */ 
         void deplacer(int valeur) 
-        { 
-            position_ += valeur; 
+        {
+            if(vivant())
+            {
+                position_ += valeur;
+            }
         }
 
         /**
@@ -114,7 +117,10 @@ class Dragon : public Creature
          */
         void voler(int pos)
         {
-            position_ = pos;
+            if(vivant())
+            {
+                position_ = pos;
+            }
         }
 
         /**
