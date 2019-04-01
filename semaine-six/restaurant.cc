@@ -7,7 +7,43 @@ using namespace std;
 /*****************************************************
   * Compléter le code à partir d'ici
  *****************************************************/
+class Produit
+{
+  private:
+    string nom;
+    string unite;
+  
+  public:
+    
+    Produit(string name, string unit = "") : nom(name), unite(unit) {}
 
+    string getNom() const { return nom; }
+
+    string getUnite() const { return unite; }
+
+    string toString() const { return nom; }
+
+};
+
+class Ingredient
+{
+  private:
+    Produit p;
+    double quantite;
+  
+  public:
+    
+    Ingredient(Produit& product, double quantity) : p(product), quantite(quantity) {}
+
+    Produit& const getProduit() { return p; }
+
+    double getQuantite() const { return quantite; }
+
+    void descriptionAdaptee() const
+    {
+      cout << getQuantite() << " " << p.getUnite() << " de " << p.getNom() << endl;
+    }
+};
 /*******************************************
  * Ne rien modifier après cette ligne.
  *******************************************/
