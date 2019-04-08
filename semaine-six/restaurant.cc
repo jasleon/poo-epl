@@ -15,46 +15,119 @@ class Produit
   
   public:
     
+    /**
+     * Superclass constructor
+     */ 
     Produit(string name, string unit = "") : nom(name), unite(unit) {}
 
+    /**
+     * This method returns the name of the product
+     */ 
     string getNom() const { return nom; }
 
+    /**
+     * This method returns the units of the product
+     */ 
     string getUnite() const { return unite; }
 
-    string toString() const { return nom; }
-
+    /**
+     * This method returns the name of the product without any change
+     */ 
+    virtual string toString() const { return nom; }
 };
 
 class Ingredient
 {
   private:
-    Produit p;
+    Produit produit;
     double quantite;
   
   public:
     
-    Ingredient(Produit& product, double quantity) : p(product), quantite(quantity) {}
+    /**
+     * Class constructor
+     */ 
+    Ingredient(const Produit& product, double quantity) : produit(product), quantite(quantity) {}
 
-    Produit& const getProduit() { return p; }
+    /**
+     * This method returns a constant reference to the ingredient's product
+     */ 
+    const Produit& getProduit() const { return produit; }
 
+    /**
+     * This method returns the quantity of the ingredient
+     */ 
     double getQuantite() const { return quantite; }
 
-    void descriptionAdaptee() const
+    /**
+     * This method is a bit complex
+     */ 
+    string descriptionAdaptee() const
     {
-      cout << getQuantite() << " " << p.getUnite() << " de " << p.getNom() << endl;
+      return string(to_string(getQuantite()) + " " + produit.getUnite() + " de " + produit.toString());
     }
 };
+
+class Recette
+{
+  private:
+    string nom;
+    double nbFois_;
+    vector<Ingredient> liste;
+
+  public:
+    
+    Recette(string name, double replication = 1.0 ) : nom(name), nbFois_(replication) {}
+
+    void ajouter(const Produit& p, double quantite) 
+    {
+      liste.push_back(Ingredient(p, quantite * nbFois_));
+    }
+
+    // Recette adapter(double n) { return Recette(""); }
+
+    string toString() const
+    {
+      cout << "Recette \"" << nom << "\" x " << nbFois_ << ":" << endl;
+      unsigned int nombre(1U);
+      for(auto i : liste)
+      {
+        cout << nombre++ << ". ";
+        i.descriptionAdaptee();
+      }
+    }
+};
+
+class ProduitCuisine : public Produit
+{
+  private:
+    Recette r;
+  public:
+    
+    ProduitCuisine(string name, string portion = "") : Produit(name, portion), r(name) {}
+    
+    void ajouterARecette(const Produit& produit, double quantite)
+    {
+      r.ajouter(produit, quantite);
+    }
+
+    string toString() const override
+    {
+      return "helloWorld";
+    }
+};
+
 /*******************************************
  * Ne rien modifier après cette ligne.
  *******************************************/
-void afficherQuantiteTotale(const Recette& recette, const Produit& produit)
+/* void afficherQuantiteTotale(const Recette& recette, const Produit& produit)
 {
   string nom = produit.getNom();
   cout << "Cette recette contient " << recette.quantiteTotale(nom)
        << " " << produit.getUnite() << " de " << nom << endl;
-}
+} */
 
-int main()
+/* int main()
 {
   // quelques produits de base
   Produit oeufs("oeufs");
@@ -108,4 +181,4 @@ int main()
   cout << glacage.toString() << endl;
 
   return 0;
-}
+} */
