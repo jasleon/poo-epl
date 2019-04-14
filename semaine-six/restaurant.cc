@@ -77,43 +77,76 @@ class Recette
 
   public:
     
+    /**
+     * Superclass constructor
+     */ 
     Recette(string name, double replication = 1.0 ) : nom(name), nbFois_(replication) {}
 
+    /**
+     * This method constructs an ingredient based on the given parameters, and adds it to the ingredient list of the recipe
+     */ 
     void ajouter(const Produit& p, double quantite) 
     {
       liste.push_back(Ingredient(p, quantite * nbFois_));
     }
 
-    // Recette adapter(double n) { return Recette(""); }
-
-    string toString() const
+    /**
+     * This method returns a new recipe corresponding to the current recipe replicated n times
+     */ 
+    Recette adapter(double n)
     {
-      cout << "Recette \"" << nom << "\" x " << nbFois_ << ":" << endl;
-      unsigned int nombre(1U);
+      Recette duplicate(nom, n);
       for(auto i : liste)
       {
-        cout << nombre++ << ". ";
-        i.descriptionAdaptee();
+        double quantite = (i.getQuantite() / nbFois_);
+        duplicate.ajouter(i.getProduit(), quantite);
       }
+      return duplicate;
+    }
+    
+    /**
+     * This method produces a string representation of this recipe
+     */ 
+    string toString() const
+    {
+      string description("Recette \"" + nom + "\" x " + to_string(nbFois_) + ":\n");
+      const size_t ingredientSize(liste.size() + 1); 
+      size_t nombre(1U);
+      for(auto i : liste)
+      {
+        const string tail((nombre < ingredientSize) ? "\n" : "");
+        description.append(to_string(nombre++) + ". " + i.descriptionAdaptee() + tail);
+      }
+      return description;
     }
 };
 
 class ProduitCuisine : public Produit
 {
   private:
-    Recette r;
+    Recette recipe;
+
   public:
     
-    ProduitCuisine(string name, string portion = "") : Produit(name, portion), r(name) {}
+    /**
+     * Subclass constructor
+     */ 
+    ProduitCuisine(string name, string portion = "") : Produit(name, portion), recipe(name) {}
     
+    /**
+     * A method to add an ingredient to the product's recipe
+     */ 
     void ajouterARecette(const Produit& produit, double quantite)
     {
-      r.ajouter(produit, quantite);
+      recipe.ajouter(produit, quantite);
     }
 
+    /**
+     * A method to produce a representation in a specific format
+     */ 
     string toString() const override
     {
-      return "helloWorld";
+      return (Produit::toString() + '\n' + recipe.toString());
     }
 };
 
@@ -127,7 +160,7 @@ class ProduitCuisine : public Produit
        << " " << produit.getUnite() << " de " << nom << endl;
 } */
 
-/* int main()
+int main()
 {
   // quelques produits de base
   Produit oeufs("oeufs");
@@ -153,32 +186,32 @@ class ProduitCuisine : public Produit
   glacageParfume.ajouterARecette(glacage, 1);
   cout << glacageParfume.toString() << endl;
 
-  Recette recette("tourte glacée au chocolat");
-  recette.ajouter(oeufs, 5);
-  recette.ajouter(farine, 150);
-  recette.ajouter(beurre, 100);
-  recette.ajouter(amandesMoulues, 50);
-  recette.ajouter(glacageParfume, 2);
+  // Recette recette("tourte glacée au chocolat");
+  // recette.ajouter(oeufs, 5);
+  // recette.ajouter(farine, 150);
+  // recette.ajouter(beurre, 100);
+  // recette.ajouter(amandesMoulues, 50);
+  // recette.ajouter(glacageParfume, 2);
 
-  cout << "===  Recette finale  =====" << endl;
-  cout << recette.toString() << endl;
-  afficherQuantiteTotale(recette, beurre);
-  cout << endl;
+  // cout << "===  Recette finale  =====" << endl;
+  // cout << recette.toString() << endl;
+  // afficherQuantiteTotale(recette, beurre);
+  // cout << endl;
 
-  // double recette
-  Recette doubleRecette = recette.adapter(2);
-  cout << "===  Recette finale x 2 ===" << endl;
-  cout << doubleRecette.toString() << endl;
+  // // double recette
+  // Recette doubleRecette = recette.adapter(2);
+  // cout << "===  Recette finale x 2 ===" << endl;
+  // cout << doubleRecette.toString() << endl;
 
-  afficherQuantiteTotale(doubleRecette, beurre);
-  afficherQuantiteTotale(doubleRecette, oeufs);
-  afficherQuantiteTotale(doubleRecette, extraitAmandes);
-  afficherQuantiteTotale(doubleRecette, glacage);
-  cout << endl;
+  // afficherQuantiteTotale(doubleRecette, beurre);
+  // afficherQuantiteTotale(doubleRecette, oeufs);
+  // afficherQuantiteTotale(doubleRecette, extraitAmandes);
+  // afficherQuantiteTotale(doubleRecette, glacage);
+  // cout << endl;
 
-  cout << "===========================\n" << endl;
-  cout << "Vérification que le glaçage n'a pas été modifié :\n";
-  cout << glacage.toString() << endl;
+  // cout << "===========================\n" << endl;
+  // cout << "Vérification que le glaçage n'a pas été modifié :\n";
+  // cout << glacage.toString() << endl;
 
   return 0;
-} */
+}
