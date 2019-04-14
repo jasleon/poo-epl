@@ -39,7 +39,7 @@ class Produit
 class Ingredient
 {
   private:
-    Produit produit;
+    const Produit * const produit_ptr;
     double quantite;
   
   public:
@@ -47,12 +47,12 @@ class Ingredient
     /**
      * Class constructor
      */ 
-    Ingredient(const Produit& product, double quantity) : produit(product), quantite(quantity) {}
+    Ingredient(const Produit& product, double quantity) : produit_ptr(&product), quantite(quantity) {}
 
     /**
      * This method returns a constant reference to the ingredient's product
      */ 
-    const Produit& getProduit() const { return produit; }
+    const Produit& getProduit() const { return *produit_ptr; }
 
     /**
      * This method returns the quantity of the ingredient
@@ -64,7 +64,7 @@ class Ingredient
      */ 
     string descriptionAdaptee() const
     {
-      return string(to_string(getQuantite()) + " " + produit.getUnite() + " de " + produit.toString());
+      return string(to_string(getQuantite()) + " " + produit_ptr->getUnite() + " de " + produit_ptr->toString());
     }
 };
 
@@ -110,7 +110,7 @@ class Recette
     string toString() const
     {
       string description("Recette \"" + nom + "\" x " + to_string(nbFois_) + ":\n");
-      const size_t ingredientSize(liste.size() + 1); 
+      const size_t ingredientSize(liste.size()); 
       size_t nombre(1U);
       for(auto i : liste)
       {
@@ -131,7 +131,7 @@ class ProduitCuisine : public Produit
     /**
      * Subclass constructor
      */ 
-    ProduitCuisine(string name, string portion = "") : Produit(name, portion), recipe(name) {}
+    ProduitCuisine(string name, string unit = "portion(s)") : Produit(name, unit), recipe(name) {}
     
     /**
      * A method to add an ingredient to the product's recipe
