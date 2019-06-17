@@ -18,7 +18,7 @@ class Produit
     /**
      * Superclass constructor
      */ 
-    Produit(string name, string unit = "") : nom(name), unite(unit) {}
+    Produit(string nom, string unite = "") : nom(nom), unite(unite) {}
 
     /**
      * This method returns the name of the product
@@ -34,12 +34,17 @@ class Produit
      * This method returns the name of the product without any change
      */ 
     virtual string toString() const { return nom; }
+
+    /**
+     * This method returns the current object
+     */ 
+    virtual const Produit* adapter(double n = 0.0) const { return (this); }
 };
 
 class Ingredient
 {
   private:
-    const Produit * const produit_ptr;
+    Produit produit;
     double quantite;
   
   public:
@@ -47,12 +52,12 @@ class Ingredient
     /**
      * Class constructor
      */ 
-    Ingredient(const Produit& product, double quantity) : produit_ptr(&product), quantite(quantity) {}
+    Ingredient(const Produit& produit, double quantite) : produit(produit), quantite(quantite) {}
 
     /**
      * This method returns a constant reference to the ingredient's product
      */ 
-    const Produit& getProduit() const { return *produit_ptr; }
+    const Produit& getProduit() const { return produit; }
 
     /**
      * This method returns the quantity of the ingredient
@@ -64,7 +69,8 @@ class Ingredient
      */ 
     string descriptionAdaptee() const
     {
-      return string(to_string(getQuantite()) + " " + produit_ptr->getUnite() + " de " + produit_ptr->toString());
+      // return string(to_string(getQuantite()) + " " + produit_ptr->getUnite() + " de " + produit_ptr->toString());
+      return "";
     }
 };
 
@@ -80,7 +86,7 @@ class Recette
     /**
      * Superclass constructor
      */ 
-    Recette(string name, double replication = 1.0 ) : nom(name), nbFois_(replication) {}
+    Recette(string nom, double replication = 1.0 ) : nom(nom), nbFois_(replication) {}
 
     /**
      * This method constructs an ingredient based on the given parameters, and adds it to the ingredient list of the recipe
@@ -124,21 +130,21 @@ class Recette
 class ProduitCuisine : public Produit
 {
   private:
-    Recette recipe;
+    Recette recette;
 
   public:
     
     /**
      * Subclass constructor
      */ 
-    ProduitCuisine(string name, string unit = "portion(s)") : Produit(name, unit), recipe(name) {}
+    ProduitCuisine(string nom, string unite = "portion(s)") : Produit(nom, unite), recette(nom) {}
     
     /**
      * A method to add an ingredient to the product's recipe
      */ 
     void ajouterARecette(const Produit& produit, double quantite)
     {
-      recipe.ajouter(produit, quantite);
+      recette.ajouter(produit, quantite);
     }
 
     /**
@@ -146,8 +152,14 @@ class ProduitCuisine : public Produit
      */ 
     string toString() const override
     {
-      return (Produit::toString() + '\n' + recipe.toString());
+      return (Produit::toString() + '\n' + recette.toString());
     }
+
+    /**
+     * This method returns a pointer to a new cooked product corresponding to the current product 
+     * whose recipe has been adapted n times
+     */ 
+    // virtual const ProduitCuisine* adapter(double n) const override { return (this); }
 };
 
 /*******************************************
