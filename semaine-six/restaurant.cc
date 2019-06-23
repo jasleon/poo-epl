@@ -38,13 +38,18 @@ class Produit
     /**
      * This method returns the current object
      */ 
-    virtual const Produit* adapter(double n = 0.0) const { return (this); }
+    virtual const Produit* adapter(double n) const { return (this); }
+
+    virtual double quantiteTotale(const string& nomProduit) const
+    {
+      return ((nomProduit == getNom()) ? 1.0 : 0.0);
+    }
 };
 
 class Ingredient
 {
   private:
-    Produit produit;
+    const Produit* produit_ptr;
     double quantite;
   
   public:
@@ -52,12 +57,12 @@ class Ingredient
     /**
      * Class constructor
      */ 
-    Ingredient(const Produit& produit, double quantite) : produit(produit), quantite(quantite) {}
+    Ingredient(const Produit& produit, double quantite) : produit_ptr(&produit), quantite(quantite) {}
 
     /**
      * This method returns a constant reference to the ingredient's product
      */ 
-    const Produit& getProduit() const { return produit; }
+    const Produit& getProduit() const { return (*produit_ptr); }
 
     /**
      * This method returns the quantity of the ingredient
@@ -69,8 +74,14 @@ class Ingredient
      */ 
     string descriptionAdaptee() const
     {
-      // return string(to_string(getQuantite()) + " " + produit_ptr->getUnite() + " de " + produit_ptr->toString());
-      return "";
+      const Produit* produit_adapte_ptr = getProduit().adapter(getQuantite());
+      const string description = to_string(getQuantite()) + " " + produit_adapte_ptr->getUnite() + " de " + produit_adapte_ptr->toString();
+      return description;
+    }
+
+    double quantiteTotale(const string& nomProduit) const
+    {
+      return (produit_ptr->quantiteTotale(nomProduit) * getQuantite());
     }
 };
 
@@ -80,6 +91,27 @@ class Recette
     string nom;
     double nbFois_;
     vector<Ingredient> liste;
+
+    string GetNiceReplication(double replication) const
+    {
+      string conversion = to_string(replication);
+      // cout << "Debug: The replication value is: " << conversion << endl;
+      const size_t point_pos = conversion.find('.');
+      if (string::npos != point_pos)
+      {
+		    // cout << "Debug: The point position is: " << position << endl;
+		    const size_t decimal_pos = point_pos + 1U;
+		    if ('0' == conversion[decimal_pos])
+		    {
+			    conversion.assign(to_string(static_cast<int>(replication)));
+		    }
+        else
+        {
+          conversion.resize(decimal_pos + 1U);
+        }
+      }
+      return conversion;
+    }
 
   public:
     
@@ -101,7 +133,7 @@ class Recette
      */ 
     Recette adapter(double n)
     {
-      Recette duplicate(nom, n);
+      Recette duplicate(nom, (n * nbFois_));
       for(auto i : liste)
       {
         double quantite = (i.getQuantite() / nbFois_);
@@ -115,7 +147,7 @@ class Recette
      */ 
     string toString() const
     {
-      string description("Recette \"" + nom + "\" x " + to_string(nbFois_) + ":\n");
+      string description("Recette \"" + nom + "\" x " + GetNiceReplication(nbFois_) + ":\n");
       const size_t ingredientSize(liste.size()); 
       size_t nombre(1U);
       for(auto i : liste)
@@ -124,6 +156,19 @@ class Recette
         description.append(to_string(nombre++) + ". " + i.descriptionAdaptee() + tail);
       }
       return description;
+    }
+
+    /**
+     * This method computes the total necessary quantity of a given product in a recipe
+     */
+    double quantiteTotale(const string& nomProduit) const
+    {
+      double result(0.0);
+      for(auto i : liste)
+      {
+        result += i.quantiteTotale(nomProduit);
+      }
+      return result;
     }
 };
 
@@ -159,18 +204,28 @@ class ProduitCuisine : public Produit
      * This method returns a pointer to a new cooked product corresponding to the current product 
      * whose recipe has been adapted n times
      */ 
-    // virtual const ProduitCuisine* adapter(double n) const override { return (this); }
+    const ProduitCuisine* adapter(double n) const override
+    {
+      ProduitCuisine* produit_cuisine_ptr = new ProduitCuisine(*this);
+      produit_cuisine_ptr->recette = produit_cuisine_ptr->recette.adapter(n);
+      return produit_cuisine_ptr;
+    }
+
+    double quantiteTotale(const string& nomProduit) const override
+    {
+      return ((nomProduit == getNom()) ? 1.0 : recette.quantiteTotale(nomProduit));
+    }
 };
 
 /*******************************************
  * Ne rien modifier après cette ligne.
  *******************************************/
-/* void afficherQuantiteTotale(const Recette& recette, const Produit& produit)
+void afficherQuantiteTotale(const Recette& recette, const Produit& produit)
 {
   string nom = produit.getNom();
   cout << "Cette recette contient " << recette.quantiteTotale(nom)
        << " " << produit.getUnite() << " de " << nom << endl;
-} */
+}
 
 int main()
 {
@@ -198,32 +253,32 @@ int main()
   glacageParfume.ajouterARecette(glacage, 1);
   cout << glacageParfume.toString() << endl;
 
-  // Recette recette("tourte glacée au chocolat");
-  // recette.ajouter(oeufs, 5);
-  // recette.ajouter(farine, 150);
-  // recette.ajouter(beurre, 100);
-  // recette.ajouter(amandesMoulues, 50);
-  // recette.ajouter(glacageParfume, 2);
+  Recette recette("tourte glacée au chocolat");
+  recette.ajouter(oeufs, 5);
+  recette.ajouter(farine, 150);
+  recette.ajouter(beurre, 100);
+  recette.ajouter(amandesMoulues, 50);
+  recette.ajouter(glacageParfume, 2);
 
-  // cout << "===  Recette finale  =====" << endl;
-  // cout << recette.toString() << endl;
-  // afficherQuantiteTotale(recette, beurre);
-  // cout << endl;
+  cout << "===  Recette finale  =====" << endl;
+  cout << recette.toString() << endl;
+  afficherQuantiteTotale(recette, beurre);
+  cout << endl;
 
-  // // double recette
-  // Recette doubleRecette = recette.adapter(2);
-  // cout << "===  Recette finale x 2 ===" << endl;
-  // cout << doubleRecette.toString() << endl;
+  // double recette
+  Recette doubleRecette = recette.adapter(2);
+  cout << "===  Recette finale x 2 ===" << endl;
+  cout << doubleRecette.toString() << endl;
 
-  // afficherQuantiteTotale(doubleRecette, beurre);
-  // afficherQuantiteTotale(doubleRecette, oeufs);
-  // afficherQuantiteTotale(doubleRecette, extraitAmandes);
-  // afficherQuantiteTotale(doubleRecette, glacage);
-  // cout << endl;
+  afficherQuantiteTotale(doubleRecette, beurre);
+  afficherQuantiteTotale(doubleRecette, oeufs);
+  afficherQuantiteTotale(doubleRecette, extraitAmandes);
+  afficherQuantiteTotale(doubleRecette, glacage);
+  cout << endl;
 
-  // cout << "===========================\n" << endl;
-  // cout << "Vérification que le glaçage n'a pas été modifié :\n";
-  // cout << glacage.toString() << endl;
+  cout << "===========================\n" << endl;
+  cout << "Vérification que le glaçage n'a pas été modifié :\n";
+  cout << glacage.toString() << endl;
 
   return 0;
 }
