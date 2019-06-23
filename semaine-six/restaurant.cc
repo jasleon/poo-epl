@@ -40,6 +40,9 @@ class Produit
      */ 
     virtual const Produit* adapter(double n) const { return (this); }
 
+    /**
+     * This method returns 1.0 if the product is named nomProduit and 0.0 otherwise
+     */
     virtual double quantiteTotale(const string& nomProduit) const
     {
       return ((nomProduit == getNom()) ? 1.0 : 0.0);
@@ -70,7 +73,7 @@ class Ingredient
     double getQuantite() const { return quantite; }
 
     /**
-     * This method is a bit complex
+     * This method is returns a description of the ingredient adapted to the quantity
      */ 
     string descriptionAdaptee() const
     {
@@ -79,6 +82,9 @@ class Ingredient
       return description;
     }
 
+    /**
+     * This method returns the ingredient’s quantity multiplied by the total quantity obtained in the ingredient’s product
+     */
     double quantiteTotale(const string& nomProduit) const
     {
       return (produit_ptr->quantiteTotale(nomProduit) * getQuantite());
@@ -91,27 +97,6 @@ class Recette
     string nom;
     double nbFois_;
     vector<Ingredient> liste;
-
-    string GetNiceReplication(double replication) const
-    {
-      string conversion = to_string(replication);
-      // cout << "Debug: The replication value is: " << conversion << endl;
-      const size_t point_pos = conversion.find('.');
-      if (string::npos != point_pos)
-      {
-		    // cout << "Debug: The point position is: " << position << endl;
-		    const size_t decimal_pos = point_pos + 1U;
-		    if ('0' == conversion[decimal_pos])
-		    {
-			    conversion.assign(to_string(static_cast<int>(replication)));
-		    }
-        else
-        {
-          conversion.resize(decimal_pos + 1U);
-        }
-      }
-      return conversion;
-    }
 
   public:
     
@@ -147,7 +132,7 @@ class Recette
      */ 
     string toString() const
     {
-      string description("Recette \"" + nom + "\" x " + GetNiceReplication(nbFois_) + ":\n");
+      string description("Recette \"" + nom + "\" x " + GetBonReplication(nbFois_) + ":\n");
       const size_t ingredientSize(liste.size()); 
       size_t nombre(1U);
       for(auto i : liste)
@@ -169,6 +154,28 @@ class Recette
         result += i.quantiteTotale(nomProduit);
       }
       return result;
+    }
+
+    /**
+     * This method returns a string with a nice format (for marking only)
+     */
+    static string GetBonReplication(double replication)
+    {
+      string conversion = to_string(replication);
+      const size_t point_pos = conversion.find('.');
+      if (string::npos != point_pos)
+      {
+        const size_t decimal_pos = point_pos + 1U;
+        if ('0' == conversion[decimal_pos])
+        {
+          conversion.assign(to_string(static_cast<int>(replication)));
+        }
+        else
+        {
+          conversion.resize(decimal_pos + 1U);
+        }
+      }
+      return conversion;
     }
 };
 
@@ -211,6 +218,10 @@ class ProduitCuisine : public Produit
       return produit_cuisine_ptr;
     }
 
+    /**
+     * This method returns 1.0 if the cooked product is named nomProduit and otherwise, 
+     * the total quantity of the given product in the recipe of the specific cooked product
+     */
     double quantiteTotale(const string& nomProduit) const override
     {
       return ((nomProduit == getNom()) ? 1.0 : recette.quantiteTotale(nomProduit));
