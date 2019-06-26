@@ -32,13 +32,113 @@ class Navire
   /*****************************************************
    * Compléter le code à partir d'ici
    *****************************************************/
+  private:
+    Coordonnees position_;
+    Pavillon pavillon_;
+    Etat etat_;
+    const int rayon_rencontre;
 
+  public:
+
+    /**
+     * Superclass constructor
+     */
+    Navire(int x, int y, Pavillon pavillon) : position_(x, y), pavillon_(pavillon), etat_(Intact), rayon_rencontre(10) {}
+
+    /**
+     * This method returns the coordinates of the ship
+     */
+    Coordonnees position() const { return position_; }
+
+    /**
+     * This method moves the ship de_x units horizontally and de_y units vertically if it is not sunk (Coule)
+     */
+    void avancer(int de_x, int de_y)
+    {
+      if (Coule != etat_)
+      {
+        position_ += Coordonnees(de_x, de_y);
+      }
+    }
+
+    /**
+     * This method resets the ship to Intact state
+     */
+    void renflouer() { etat_ = Intact; }
+
+    /**
+     * This method displays the ship in this format: "<nom générique> en (<x>, <y>) battant pavillon <pavillon>, <etat>"
+     */
+    ostream& afficher(ostream& sortie) const
+    {
+      sortie << "<nom générique> en " << position_ << " battant pavillon " << pavillon_ << ", " << etat_;
+      return sortie;
+    }
 };
 
 void Coordonnees::operator+=(Coordonnees const& autre)
 {
   // à définir ici
+  this->x_ += autre.x();
+  this->y_ += autre.y();
+}
 
+double distance(Coordonnees&  coordonnee1, Coordonnees& coordonnee2)
+{
+  double dx = static_cast<double>(sq(coordonnee1.x() - coordonnee2.x()));
+  double dy = static_cast<double>(sq(coordonnee1.y() - coordonnee2.y()));
+  return sqrt(dx + dy);
+}
+
+ostream& operator<<(ostream& sortie, Coordonnees const& coordonnee)
+{
+  sortie << '(' << coordonnee.x() << ", " << coordonnee.y() << ')';
+  return sortie;
+}
+
+ostream& operator<<(ostream& sortie, Pavillon const& pavillon)
+{
+  switch(pavillon)
+  {
+    case JollyRogers:
+      sortie << "pirate";
+      break;
+    case CompagnieDuSenegal:
+      sortie << "français";
+      break;
+    case CompagnieDOstende:
+      sortie << "autrichien";
+      break;
+    default:
+      sortie << "pavillon inconnu";
+      break;
+  }
+  return sortie;
+}
+
+ostream& operator<<(ostream& sortie, Etat const& etat)
+{
+  switch(etat)
+  {
+    case Intact:
+      sortie << "intact";
+      break;
+    case Endommage:
+      sortie << "ayant subi des dommages";
+      break;
+    case Coule:
+      sortie << "coulé";
+      break;
+    default:
+      sortie << "état inconnu";
+      break;
+  }
+  return sortie;
+}
+
+double distance(Navire& navire1, Navire& navire2)
+{
+  return 0.0;
 }
 
 /*******************************************
