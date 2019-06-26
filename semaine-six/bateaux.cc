@@ -136,9 +136,17 @@ ostream& operator<<(ostream& sortie, Etat const& etat)
   return sortie;
 }
 
+// To do: Refactor distance methods
 double distance(Navire& navire1, Navire& navire2)
 {
-  return 0.0;
+  Coordonnees c1(navire1.position());
+  Coordonnees c2(navire2.position());
+  return distance(c1, c2);
+}
+
+ostream& operator<<(ostream& sortie, Navire const& navire)
+{
+  return navire.afficher(sortie);
 }
 
 /*******************************************
