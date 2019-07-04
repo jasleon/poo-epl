@@ -69,19 +69,45 @@ class Navire
     /**
      * This method displays the ship in this format: "<nom générique> en (<x>, <y>) battant pavillon <pavillon>, <etat>"
      */
-    ostream& afficher(ostream& sortie) const;
+    virtual ostream& afficher(ostream& sortie) const;
 };
 
 class Pirate : public Navire
 {
   public:
+    
+    /**
+     * Subclass constructor
+     */
     Pirate(int x, int y, Pavillon pavillon) : Navire(x, y, pavillon) {}
+
+    /**
+     * This method specialices the display method from its parent class by prepending "bateau pirate"
+     */
+    ostream& afficher(ostream& sortie) const override
+    {
+      sortie << "bateau pirate";
+      return Navire::afficher(sortie);
+    }
 };
 
 class Marchand : public Navire
 {
   public:
+    
+    /**
+     * Subclass constructor
+     */
     Marchand(int x, int y, Pavillon pavillon) : Navire(x, y, pavillon) {}
+
+    /**
+     * This method specialices the display method from its parent class by prepending "navire marchand"
+     */
+    ostream& afficher(ostream& sortie) const override
+    {
+      sortie << "navire marchand";
+      return Navire::afficher(sortie);
+    }
 };
 
 void Coordonnees::operator+=(Coordonnees const& autre)
@@ -159,7 +185,7 @@ ostream& operator<<(ostream& sortie, Navire const& navire)
 
 ostream& Navire::afficher(ostream& sortie) const
 {
-  sortie << "<nom générique> en " << position_ << " battant pavillon " << pavillon_ << ", " << etat_;
+  sortie << " en " << position_ << " battant pavillon " << pavillon_ << ", " << etat_;
   return sortie;
 }
 
