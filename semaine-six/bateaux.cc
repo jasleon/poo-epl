@@ -72,7 +72,7 @@ class Navire
     virtual ostream& afficher(ostream& sortie) const;
 };
 
-class Pirate : public Navire
+class Pirate : public virtual Navire
 {
   public:
     
@@ -91,7 +91,7 @@ class Pirate : public Navire
     }
 };
 
-class Marchand : public Navire
+class Marchand : public virtual Navire
 {
   public:
     
@@ -106,6 +106,29 @@ class Marchand : public Navire
     ostream& afficher(ostream& sortie) const override
     {
       sortie << "navire marchand";
+      return Navire::afficher(sortie);
+    }
+};
+
+class Felon : public virtual Marchand, public virtual Pirate
+{
+  public:
+    
+    /**
+     * Subclass constructor
+     */
+    Felon(int x, int y, Pavillon pavillon) :
+      Navire(x, y, pavillon),
+      Marchand(x, y, pavillon),
+      Pirate(x, y, pavillon)
+    {}
+
+    /**
+     * This method specialices the display method from its parent class by prepending "navire félon"
+     */
+    ostream& afficher(ostream& sortie) const override
+    {
+      sortie << "navire félon";
       return Navire::afficher(sortie);
     }
 };
