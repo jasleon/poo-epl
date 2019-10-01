@@ -51,6 +51,16 @@ class Navire
     Coordonnees position() const { return position_; }
 
     /**
+     * This method returns the flag of the ship
+     */
+    Pavillon pavillon() const { return pavillon_; }
+    
+    /**
+     * This method returns the state of the ship
+     */
+    Etat etat() const { return etat_; }
+
+    /**
      * This method moves the ship de_x units horizontally and de_y units vertically if it is not sunk (Coule)
      */
     void avancer(int de_x, int de_y)
@@ -70,6 +80,26 @@ class Navire
      * This method displays the ship in this format: "<nom générique> en (<x>, <y>) battant pavillon <pavillon>, <etat>"
      */
     virtual ostream& afficher(ostream& sortie) const;
+    
+    /**
+     * This method describes how a ship attacks another
+     */
+    // virtual void attaque(Navire& _navire) const = 0;
+    
+    /**
+     * This method describes how a ship responds when it is attacked by another ship
+     */
+    // virtual void replique(Navire& _navire) const = 0;
+    
+    /**
+     * This method describes what happens when a ship is hit
+     */
+    // virtual void est_touche() const = 0;
+    
+    /**
+     * This method handles an encounter with another ship
+     */
+    virtual void rencontrer(Navire& navire_) const;
 };
 
 class Pirate : public virtual Navire
@@ -140,7 +170,7 @@ void Coordonnees::operator+=(Coordonnees const& autre)
   this->y_ += autre.y();
 }
 
-double distance(Coordonnees&  coordonnee1, Coordonnees& coordonnee2)
+double distance(const Coordonnees& coordonnee1, const Coordonnees& coordonnee2)
 {
   double dx = static_cast<double>(sq(coordonnee1.x() - coordonnee2.x()));
   double dy = static_cast<double>(sq(coordonnee1.y() - coordonnee2.y()));
@@ -193,12 +223,9 @@ ostream& operator<<(ostream& sortie, Etat const& etat)
   return sortie;
 }
 
-// To do: Refactor distance methods
-double distance(Navire& navire1, Navire& navire2)
+double distance(const Navire& navire1, const Navire& navire2)
 {
-  Coordonnees c1(navire1.position());
-  Coordonnees c2(navire2.position());
-  return distance(c1, c2);
+  return distance(navire1.position(), navire2.position());
 }
 
 ostream& operator<<(ostream& sortie, Navire const& navire)
@@ -210,6 +237,18 @@ ostream& Navire::afficher(ostream& sortie) const
 {
   sortie << " en " << position_ << " battant pavillon " << pavillon_ << ", " << etat_;
   return sortie;
+}
+
+void Navire::rencontrer(Navire& navire_) const
+{
+  const bool condition_a = Coule != this->etat() && Coule != navire_.etat();
+  const bool condition_b = this->pavillon() != navire_.pavillon();
+  const bool condition_c = distance(*this, navire_) < static_cast<double>(rayon_rencontre);
+
+  if (condition_a && condition_b && condition_c)
+  {
+    // These ships must battle!
+  }
 }
 
 /*******************************************
