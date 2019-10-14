@@ -32,7 +32,7 @@ class Navire
   /*****************************************************
    * Compléter le code à partir d'ici
    *****************************************************/
-  private:
+  protected:
     Coordonnees position_;
     Pavillon pavillon_;
     Etat etat_;
@@ -49,16 +49,6 @@ class Navire
      * This method returns the coordinates of the ship
      */
     Coordonnees position() const { return position_; }
-
-    /**
-     * This method returns the flag of the ship
-     */
-    Pavillon pavillon() const { return pavillon_; }
-    
-    /**
-     * This method returns the state of the ship
-     */
-    Etat etat() const { return etat_; }
 
     /**
      * This method moves the ship de_x units horizontally and de_y units vertically if it is not sunk (Coule)
@@ -84,22 +74,28 @@ class Navire
     /**
      * This method describes how a ship attacks another
      */
-    // virtual void attaque(Navire& _navire) const = 0;
+    virtual void attaque(Navire& _navire) const
+    {
+      (void)_navire;
+    }
     
     /**
      * This method describes how a ship responds when it is attacked by another ship
      */
-    // virtual void replique(Navire& _navire) const = 0;
+    virtual void replique(Navire& _navire) const
+    {
+      (void)_navire;
+    }
     
     /**
      * This method describes what happens when a ship is hit
      */
-    // virtual void est_touche() const = 0;
+    virtual void est_touche() { };
     
     /**
      * This method handles an encounter with another ship
      */
-    virtual void rencontrer(Navire& navire_) const;
+    virtual void rencontrer(Navire& navire_);
 };
 
 class Pirate : public virtual Navire
@@ -119,6 +115,38 @@ class Pirate : public virtual Navire
       sortie << "bateau pirate";
       return Navire::afficher(sortie);
     }
+    
+    void attaque(Navire& _navire) const override
+    {
+      if (Coule != etat_)
+      {
+        cout << "A l'abordage !" << endl;
+        _navire.est_touche();
+      }
+    }
+
+    void replique(Navire& _navire) const override
+    {
+      if (Coule != etat_)
+      {
+        cout << "Non mais, ils nous attaquent ! On riposte !!" << endl;
+        attaque(_navire);
+      }
+    }
+
+    virtual void est_touche() override
+    {
+      switch (etat_)
+      {
+        case Intact:
+          etat_ = Endommage;
+          break;
+        case Endommage:
+          etat_ = Coule;
+        default:
+          break;
+      }
+    }
 };
 
 class Marchand : public virtual Navire
@@ -137,6 +165,31 @@ class Marchand : public virtual Navire
     {
       sortie << "navire marchand";
       return Navire::afficher(sortie);
+    }
+
+    void attaque(Navire& _navire) const override
+    {
+      if (Coule != etat_)
+      {
+        cout << "On vous aura ! (insultes)" << endl;
+      }
+    }
+
+    void replique(Navire& _navire) const override
+    {
+      if (Coule == etat_)
+      {
+        cout << "SOS je coule !" << endl;
+      }
+      else
+      {
+        cout << "Même pas peur !" << endl;
+      }
+    }
+
+    void est_touche() override
+    {
+      etat_ = Coule;
     }
 };
 
@@ -160,6 +213,21 @@ class Felon : public virtual Marchand, public virtual Pirate
     {
       sortie << "navire félon";
       return Navire::afficher(sortie);
+    }
+
+    void attaque(Navire& _navire) const override
+    {
+      Pirate::attaque(_navire);
+    }
+
+    void replique(Navire& _navire) const override
+    {
+      Marchand::replique(_navire);
+    }
+
+    void est_touche() override
+    {
+      Pirate::est_touche(); 
     }
 };
 
@@ -239,15 +307,17 @@ ostream& Navire::afficher(ostream& sortie) const
   return sortie;
 }
 
-void Navire::rencontrer(Navire& navire_) const
+void Navire::rencontrer(Navire& navire_)
 {
-  const bool condition_a = Coule != this->etat() && Coule != navire_.etat();
-  const bool condition_b = this->pavillon() != navire_.pavillon();
+  const bool condition_a = Coule != this->etat_ && Coule != navire_.etat_;
+  const bool condition_b = this->pavillon_ != navire_.pavillon_;
   const bool condition_c = distance(*this, navire_) < static_cast<double>(rayon_rencontre);
 
   if (condition_a && condition_b && condition_c)
   {
     // These ships must battle!
+    this->attaque(navire_);
+    navire_.replique(*this);
   }
 }
 
@@ -255,17 +325,17 @@ void Navire::rencontrer(Navire& navire_) const
  * Ne rien modifier après cette ligne.
  *******************************************/
 
-// void rencontre(Navire& ship1, Navire& ship2)
-// {
-//   cout << "Avant la rencontre :" << endl;
-//   cout << ship1 << endl;
-//   cout << ship2 << endl;
-//   cout << "Distance : " << distance(ship1, ship2) << endl;
-//   ship1.rencontrer(ship2);
-//   cout << "Apres la rencontre :" << endl;
-//   cout << ship1 << endl;
-//   cout << ship2 << endl;
-// }
+void rencontre(Navire& ship1, Navire& ship2)
+{
+  cout << "Avant la rencontre :" << endl;
+  cout << ship1 << endl;
+  cout << ship2 << endl;
+  cout << "Distance : " << distance(ship1, ship2) << endl;
+  ship1.rencontrer(ship2);
+  cout << "Apres la rencontre :" << endl;
+  cout << ship1 << endl;
+  cout << ship2 << endl;
+}
 
 int main()
 {
@@ -292,35 +362,35 @@ int main()
   ship1.avancer(0, -5);
   cout << ship1 << endl;
 
-  // cout << endl << "===== Test de la partie 2 =====" << endl << endl;
+  cout << endl << "===== Test de la partie 2 =====" << endl << endl;
 
-  // cout << "Bateau pirate et marchand ennemis (trop loins) :" << endl;
-  // rencontre(ship1, ship2);
+  cout << "Bateau pirate et marchand ennemis (trop loins) :" << endl;
+  rencontre(ship1, ship2);
 
-  // cout << endl << "Bateau pirate et marchand ennemis (proches) :" << endl;
-  // ship1.avancer(-40, -2);
-  // ship2.avancer(10, 2);
-  // rencontre(ship1, ship2);
+  cout << endl << "Bateau pirate et marchand ennemis (proches) :" << endl;
+  ship1.avancer(-40, -2);
+  ship2.avancer(10, 2);
+  rencontre(ship1, ship2);
 
-  // cout << endl << "Deux bateaux pirates ennemis intacts (proches) :" << endl;
-  // Pirate ship3(33, 8, CompagnieDOstende);
-  // rencontre(ship1, ship3);
+  cout << endl << "Deux bateaux pirates ennemis intacts (proches) :" << endl;
+  Pirate ship3(33, 8, CompagnieDOstende);
+  rencontre(ship1, ship3);
 
-  // cout << endl << "Bateaux pirates avec dommages, ennemis :" << endl;
-  // rencontre(ship1, ship3);
+  cout << endl << "Bateaux pirates avec dommages, ennemis :" << endl;
+  rencontre(ship1, ship3);
 
-  // cout << endl << "Bateaux marchands ennemis :" << endl;
-  // Marchand ship4(21, 7, CompagnieDuSenegal);
-  // Marchand ship5(27, 2, CompagnieDOstende);
-  // rencontre(ship4, ship5);
+  cout << endl << "Bateaux marchands ennemis :" << endl;
+  Marchand ship4(21, 7, CompagnieDuSenegal);
+  Marchand ship5(27, 2, CompagnieDOstende);
+  rencontre(ship4, ship5);
 
-  // cout << endl << "Pirate vs Felon :" << endl;
-  // ship3.renflouer();
-  // Felon ship6(32, 10, CompagnieDuSenegal);
-  // rencontre(ship3, ship6);
+  cout << endl << "Pirate vs Felon :" << endl;
+  ship3.renflouer();
+  Felon ship6(32, 10, CompagnieDuSenegal);
+  rencontre(ship3, ship6);
 
-  // cout << endl << "Felon vs Pirate :" << endl;
-  // rencontre(ship6, ship3);
+  cout << endl << "Felon vs Pirate :" << endl;
+  rencontre(ship6, ship3);
 
   return 0;
 }
