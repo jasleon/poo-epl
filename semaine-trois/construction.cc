@@ -17,26 +17,51 @@ public:
   /*****************************************************
     Compléter le code à partir d'ici
   *******************************************************/
+  Brique(Forme shape, Couleur color) : forme(shape), couleur(color) {}
 
+  /**
+   * This method prints the object in the format "(shape, color)"
+   */
+  ostream& afficher(ostream& sortie) const
+  {
+    if (couleur.empty())
+    {
+      sortie << forme;
+    }
+    else
+    {
+      sortie << "(" << forme << ", " << couleur << ")";
+    }
+    return sortie;
+  }
+
+private:
+  
+  Brique() {}
 };
 
-class Construction
+ostream& operator<<(ostream& sortie, Brique const& brique)
 {
-  friend class Grader;
-
-};
-
-const Construction operator*(unsigned int n, Construction const& a)
-{
+  return brique.afficher(sortie);
 }
 
-const Construction operator/(unsigned int n, Construction const& a)
-{
-}
+// class Construction
+// {
+//   friend class Grader;
 
-const Construction operator%(unsigned int n, Construction const& a)
-{
-}
+// };
+
+// const Construction operator*(unsigned int n, Construction const& a)
+// {
+// }
+
+// const Construction operator/(unsigned int n, Construction const& a)
+// {
+// }
+
+// const Construction operator%(unsigned int n, Construction const& a)
+// {
+// }
 
 /*******************************************
  * Ne rien modifier après cette ligne.
@@ -51,22 +76,22 @@ int main()
   Brique mur  (" pleine ", "blanc");
   Brique vide ("                 ", "");
 
-  unsigned int largeur(4);
-  unsigned int profondeur(3);
-  unsigned int hauteur(3); // sans le toit
+  // unsigned int largeur(4);
+  // unsigned int profondeur(3);
+  // unsigned int hauteur(3); // sans le toit
 
-  // on construit les murs
-  Construction maison( hauteur / ( profondeur % (largeur * mur) ) );
+  // // on construit les murs
+  // Construction maison( hauteur / ( profondeur % (largeur * mur) ) );
 
-  // on construit le toit
-  Construction toit(profondeur % ( toitG + 2*toitM + toitD ));
-  toit ^= profondeur % (vide + toitG + toitD);
+  // // on construit le toit
+  // Construction toit(profondeur % ( toitG + 2*toitM + toitD ));
+  // toit ^= profondeur % (vide + toitG + toitD);
 
-  // on pose le toit sur les murs
-  maison ^= toit;
+  // // on pose le toit sur les murs
+  // maison ^= toit;
 
-  // on admire notre construction
-  cout << maison << endl;
+  // // on admire notre construction
+  // cout << maison << endl;
 
   return 0;
 }
