@@ -20,9 +20,19 @@ public:
   string getNom() const { return nom; }
   double getVolume() const { return volume; }
   double getPH() const { return pH; }
+  string getNombre(const double value) const
+  {
+    const string number = to_string(value);
+    const size_t numberSize = number.size();
+    string processed = number.substr(0U, numberSize-4U);
+    if ('0' == processed.back()) { processed.pop_back(); }
+    if ('0' == processed.back()) { processed.pop_back(); }
+    if ('.' == processed.back()) { processed.pop_back(); }
+    return processed;
+  }
   ostream& etiquette(ostream& sortie) const
   {
-	  sortie << getNom() << " : " << static_cast<long>(getVolume()) << " ml, pH " << getPH();
+	  sortie << getNom() << " : " << getNombre(volume) << " ml, pH " << getPH();
 	  return sortie;
   }
 };
