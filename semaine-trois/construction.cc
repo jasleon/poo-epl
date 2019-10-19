@@ -45,11 +45,37 @@ ostream& operator<<(ostream& sortie, Brique const& brique)
   return brique.afficher(sortie);
 }
 
-// class Construction
-// {
-//   friend class Grader;
+class Construction
+{
+  friend class Grader;
 
-// };
+  private:
+    vector<vector<vector<Brique>>> contenu;
+
+  public:
+    
+    Construction(const Brique& brique) : contenu({{{brique}}}) {}
+
+    ostream& afficher(ostream& sortie) const
+    {
+      if (!contenu.empty())
+      {
+        size_t numero = contenu.size();
+        for(size_t height = 0U; height < contenu.size(); height++)
+        {
+          sortie << "Couche " << numero << " :";
+          for(size_t depth = 0U; depth < contenu[height].size(); depth++)
+          {
+            for(size_t width = 0U; width < contenu[height][depth].size(); width++)
+            {
+              sortie << contenu[height][depth][width];
+            }
+          }
+        }
+      }
+      return sortie;
+    }
+};
 
 // const Construction operator*(unsigned int n, Construction const& a)
 // {
