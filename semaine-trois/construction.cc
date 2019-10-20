@@ -60,10 +60,9 @@ class Construction
     {
       if (!contenu.empty())
       {
-        size_t numero = contenu.size();
         for(size_t height = 0U; height < contenu.size(); height++)
         {
-          sortie << "Couche " << --numero << " :\n";
+          sortie << "Couche " << height << " :\n";
           for(size_t depth = 0U; depth < contenu[height].size(); depth++)
           {
             for(size_t width = 0U; width < contenu[height][depth].size(); width++)
