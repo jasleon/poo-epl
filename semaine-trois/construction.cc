@@ -40,9 +40,9 @@ private:
   Brique() {}
 };
 
-ostream& operator<<(ostream& sortie, Brique const& brique)
+ostream& operator<<(ostream& sortie, Brique const& brique_)
 {
-  return brique.afficher(sortie);
+  return brique_.afficher(sortie);
 }
 
 class Construction
@@ -76,6 +76,11 @@ class Construction
       return sortie;
     }
 };
+
+ostream& operator<<(ostream& sortie, Construction const& construction_)
+{
+  return construction_.afficher(sortie);
+}
 
 // const Construction operator*(unsigned int n, Construction const& a)
 // {
