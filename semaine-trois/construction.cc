@@ -85,6 +85,12 @@ class Construction
     {
       return contenu[couche_id];
     }
+
+    Construction& operator^=(Construction const& batiment)
+    {
+      this->ajouter(batiment.obtenir(0U));
+      return *this;
+    }
 };
 
 ostream& operator<<(ostream& sortie, Construction const& construction_)
@@ -92,11 +98,11 @@ ostream& operator<<(ostream& sortie, Construction const& construction_)
   return construction_.afficher(sortie);
 }
 
-const Construction operator^(Construction a, Construction const& b)
-{
-  a.ajouter(b.obtenir(0U));
-  return a;
-}
+// const Construction operator^(Construction a, Construction const& b)
+// {
+//   a.ajouter(b.obtenir(0U));
+//   return a;
+// }
 
 // const Construction operator*(unsigned int n, Construction const& a)
 // {
