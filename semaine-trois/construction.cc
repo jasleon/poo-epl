@@ -68,7 +68,7 @@ class Construction
           {
             for(size_t width = 0U; width < contenu[height][depth].size(); width++)
             {
-              sortie << contenu[height][depth][width];
+              sortie << contenu[height][depth][width] << "\n";
             }
           }
         }
@@ -81,9 +81,9 @@ class Construction
       contenu.push_back(couche);
     }
 
-    vector<vector<Brique>> obtenir(const size_t height) const
+    vector<vector<Brique>> obtenir(const size_t couche_id) const
     {
-      return contenu[height];
+      return contenu[couche_id];
     }
 };
 
