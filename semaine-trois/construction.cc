@@ -75,11 +75,27 @@ class Construction
       }
       return sortie;
     }
+
+    void ajouter(vector<vector<Brique>> const& couche)
+    {
+      contenu.push_back(couche);
+    }
+
+    vector<vector<Brique>> obtenir(const size_t height) const
+    {
+      return contenu[height];
+    }
 };
 
 ostream& operator<<(ostream& sortie, Construction const& construction_)
 {
   return construction_.afficher(sortie);
+}
+
+const Construction operator^(Construction a, Construction const& b)
+{
+  a.ajouter(b.obtenir(0U));
+  return a;
 }
 
 // const Construction operator*(unsigned int n, Construction const& a)
