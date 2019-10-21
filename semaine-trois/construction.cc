@@ -60,7 +60,8 @@ class Construction
     {
       if (!contenu.empty())
       {
-        for(size_t height = 0U; height < contenu.size(); height++)
+        const int couches = static_cast<int>(contenu.size()) - 1;
+        for(int height = couches; 0 <= height; height--)
         {
           sortie << "Couche " << height << " :\n";
           for(size_t depth = 0U; depth < contenu[height].size(); depth++)
@@ -87,7 +88,25 @@ class Construction
 
     Construction& operator^=(Construction const& batiment)
     {
-      this->ajouter(batiment.obtenir(0U));
+      for(size_t height = 0U; height < batiment.contenu.size(); height++)
+      {
+        this->contenu.push_back(batiment.contenu[height]);
+      }
+      return *this;
+    }
+
+    Construction& operator-=(Construction const& batiment)
+    {
+      if (this->contenu.size() > batiment.contenu.size())
+      {
+        for(size_t height = 0U; height < batiment.contenu.size(); height++)
+        {
+          for(size_t depth = 0U; depth < batiment.contenu[height].size(); depth++)
+          {
+            this->contenu[height].push_back(batiment.contenu[height][depth]);
+          }
+        }
+      }
       return *this;
     }
 };
