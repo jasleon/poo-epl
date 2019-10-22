@@ -64,12 +64,15 @@ class Construction
         for(int height = couches; 0 <= height; height--)
         {
           sortie << "Couche " << height << " :\n";
-          for(size_t depth = 0U; depth < contenu[height].size(); depth++)
+
+          const int rangees = static_cast<int>(contenu[height].size()) - 1;
+          for(int depth = rangees; 0 <= depth; depth--)
           {
             for(size_t width = 0U; width < contenu[height][depth].size(); width++)
             {
-              sortie << contenu[height][depth][width] << "\n";
+              sortie << contenu[height][depth][width];
             }
+            sortie << "\n";
           }
         }
       }
@@ -88,7 +91,9 @@ class Construction
 
     Construction& operator^=(Construction const& batiment)
     {
-      for(size_t height = 0U; height < batiment.contenu.size(); height++)
+      const size_t b_hauteur = batiment.contenu.size();
+
+      for(size_t height = 0U; height < b_hauteur; height++)
       {
         this->contenu.push_back(batiment.contenu[height]);
       }
@@ -97,13 +102,47 @@ class Construction
 
     Construction& operator-=(Construction const& batiment)
     {
-      if (this->contenu.size() > batiment.contenu.size())
+      const size_t a_hauteur = this->contenu.size();
+      const size_t b_hauteur = batiment.contenu.size();
+
+      if (a_hauteur <= b_hauteur)
       {
-        for(size_t height = 0U; height < batiment.contenu.size(); height++)
+        for(size_t height = 0U; height < a_hauteur; height++)
         {
-          for(size_t depth = 0U; depth < batiment.contenu[height].size(); depth++)
+          const size_t b_profondeur = batiment.contenu[height].size();
+
+          for(size_t depth = 0U; depth < b_profondeur; depth++)
           {
             this->contenu[height].push_back(batiment.contenu[height][depth]);
+          }
+        }
+      }
+      return *this;
+    }
+
+    Construction& operator+=(Construction const& batiment)
+    {
+      const size_t a_hauteur = this->contenu.size();
+      const size_t b_hauteur = batiment.contenu.size();
+      
+      if (a_hauteur <= b_hauteur)
+      {
+        for (size_t height = 0U; height < a_hauteur; height++)
+        {
+          const size_t a_profondeur = this->contenu[height].size();
+          const size_t b_profondeur = batiment.contenu[height].size();
+
+          if (a_profondeur <= b_profondeur)
+          {
+            for (size_t depth = 0U; depth < a_profondeur; depth++)
+            {
+              const size_t b_largeur = batiment.contenu[height][depth].size();
+
+              for (size_t width = 0U; width < b_largeur; width++)
+              {
+                this->contenu[height][depth].push_back(batiment.contenu[height][depth][width]);
+              }
+            }
           }
         }
       }
