@@ -79,16 +79,6 @@ class Construction
       return sortie;
     }
 
-    void ajouter(vector<vector<Brique>> const& couche)
-    {
-      contenu.push_back(couche);
-    }
-
-    vector<vector<Brique>> obtenir(const size_t couche_id) const
-    {
-      return contenu[couche_id];
-    }
-
     Construction& operator^=(Construction const& batiment)
     {
       const size_t b_hauteur = batiment.contenu.size();
