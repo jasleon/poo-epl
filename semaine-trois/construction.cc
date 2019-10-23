@@ -70,7 +70,7 @@ class Construction
           {
             for(size_t width = 0U; width < contenu[height][depth].size(); width++)
             {
-              sortie << contenu[height][depth][width];
+              sortie << contenu[height][depth][width] << " ";
             }
             sortie << "\n";
           }
@@ -140,28 +140,58 @@ class Construction
     }
 };
 
+const Construction operator^(Construction a, Construction const& b)
+{
+  a ^= b;
+  return a;
+}
+
+const Construction operator-(Construction a, Construction const& b)
+{
+  a -= b;
+  return a;
+}
+
+const Construction operator+(Construction a, Construction const& b)
+{
+  a += b;
+  return a;
+}
+
 ostream& operator<<(ostream& sortie, Construction const& construction_)
 {
   return construction_.afficher(sortie);
 }
 
-// const Construction operator^(Construction a, Construction const& b)
-// {
-//   a.ajouter(b.obtenir(0U));
-//   return a;
-// }
+const Construction operator*(unsigned int n, Construction const& a)
+{
+  Construction resultat(a);
+  for (size_t k = 1; k < n; ++k)
+  {
+    resultat += a;
+  }
+  return resultat;
+}
 
-// const Construction operator*(unsigned int n, Construction const& a)
-// {
-// }
+const Construction operator/(unsigned int n, Construction const& a)
+{
+  Construction resultat(a);
+  for (size_t k = 1; k < n; ++k)
+  {
+    resultat ^= a;
+  }
+  return resultat;
+}
 
-// const Construction operator/(unsigned int n, Construction const& a)
-// {
-// }
-
-// const Construction operator%(unsigned int n, Construction const& a)
-// {
-// }
+const Construction operator%(unsigned int n, Construction const& a)
+{
+  Construction resultat(a);
+  for (size_t k = 1; k < n; ++k)
+  {
+    resultat -= a;
+  }
+  return resultat;
+}
 
 /*******************************************
  * Ne rien modifier après cette ligne.
@@ -176,22 +206,22 @@ int main()
   Brique mur  (" pleine ", "blanc");
   Brique vide ("                 ", "");
 
-  // unsigned int largeur(4);
-  // unsigned int profondeur(3);
-  // unsigned int hauteur(3); // sans le toit
+  unsigned int largeur(4);
+  unsigned int profondeur(3);
+  unsigned int hauteur(3); // sans le toit
 
-  // // on construit les murs
-  // Construction maison( hauteur / ( profondeur % (largeur * mur) ) );
+  // on construit les murs
+  Construction maison( hauteur / ( profondeur % (largeur * mur) ) );
 
-  // // on construit le toit
-  // Construction toit(profondeur % ( toitG + 2*toitM + toitD ));
-  // toit ^= profondeur % (vide + toitG + toitD);
+  // on construit le toit
+  Construction toit(profondeur % ( toitG + 2*toitM + toitD ));
+  toit ^= profondeur % (vide + toitG + toitD);
 
-  // // on pose le toit sur les murs
-  // maison ^= toit;
+  // on pose le toit sur les murs
+  maison ^= toit;
 
-  // // on admire notre construction
-  // cout << maison << endl;
+  // on admire notre construction
+  cout << maison << endl;
 
   return 0;
 }
